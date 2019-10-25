@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 use think\Controller;
-use think\Exception;
+use app\common\lib\IAuth;
 
 class Admin extends Controller
 {
@@ -14,7 +14,7 @@ class Admin extends Controller
             if (!$validat->check($data)){
                 $this->error($validat->getError());
             }
-            $data['password'] = md5($data['password'].'_#lkh');
+            $data['password'] = IAuth::setPassword($data['password']);
             $data['status'] = 1;
             try{
                 $id = model('AdminUser')->add($data);

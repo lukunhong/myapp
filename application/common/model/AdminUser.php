@@ -14,6 +14,7 @@ class AdminUser extends Model{
         }
         //过滤表结构不存在字段
         $this->allowField(true)->save($data);
-        return $this->id;
+        //在模型内部，请不要使用$this->name的方式来获取数据，请使用$this->getAttr('name') 替代
+        return $this->getAttr('id');
     }
 }

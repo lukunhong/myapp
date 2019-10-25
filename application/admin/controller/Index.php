@@ -1,9 +1,8 @@
 <?php
 namespace app\admin\controller;
 
-use think\Controller;
 
-class Index extends Controller
+class Index extends Base
 {
 
     public function index()
@@ -13,6 +12,8 @@ class Index extends Controller
 
     public function welcome()
     {
+        echo session(config('admin.session_user'), '', config('admin.myapp_scope'));
+        echo 1;
         return 'welcome';
     }
 }
