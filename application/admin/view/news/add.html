@@ -1,0 +1,433 @@
+<!--header-->
+{include file="public/_meta" /}
+<article class="page-container">
+  <form class="form form-horizontal" id="form-singwaapp" url="{:url('news/add')}">
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文章标题：</label>
+      <div class="formControls col-xs-8 col-sm-9">
+        <input type="text" class="input-text" value="" placeholder="" id="title" name="title">
+      </div>
+    </div>
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">简略标题：</label>
+      <div class="formControls col-xs-8 col-sm-9">
+        <input type="text" class="input-text" value="" placeholder="" id="samll_title" name="small_title">
+      </div>
+    </div>
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>分类栏目：</label>
+      <div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+				<select name="catid" class="select">
+                  <option value="1">栏目</option>
+                </select>
+				</span> </div>
+    </div>
+
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">文章摘要：</label>
+      <div class="formControls col-xs-8 col-sm-9">
+        <textarea name="description" cols="" rows="" class="textarea"  placeholder="说点什么...最少输入10个字符" datatype="*10-100" dragonfly="true" nullmsg="备注不能为空！" ></textarea>
+        <p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
+      </div>
+    </div>
+
+
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">允许评论：</label>
+      <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+        <div class="check-box">
+          <input type="checkbox" id="is_allowcomments" name="is_allowcomments" value="1">
+          <label for="checkbox-pinglun">&nbsp;</label>
+        </div>
+      </div>
+    </div>
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">是否推荐到首页头图：</label>
+      <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+        <div class="check-box">
+          <input type="checkbox" id="is_head_figure" name="is_head_figure" value="1">
+          <label for="checkbox-pinglun">&nbsp;</label>
+        </div>
+      </div>
+    </div>
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">是否推荐：</label>
+      <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+        <div class="check-box">
+          <input type="checkbox" id="is_position" name="is_position" value="1">
+          <label for="checkbox-pinglun">&nbsp;</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">缩略图：</label>
+      <div class="formControls col-xs-8 col-sm-9">
+        <!--<input id="file_upload"  type="file" multiple="true" >-->
+        <!--<input type="file" name="file_upload" id="file_upload" class="file" data-preview-file-type="text" />-->
+        <!--<img style="display: none" id="upload_org_code_img" src="" width="150" height="150">-->
+        <!--<input id="file_upload_image" name="image" type="hidden" multiple="true" value="">-->
+
+        <div id="uploader">
+          <!--用来存放item-->
+          <div id="fileList" class="filelist"></div>
+          <div id="filePicker">选择/拖拽图片</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row cl">
+      <label class="form-label col-xs-4 col-sm-2">文章内容：</label>
+      <div class="formControls col-xs-8 col-sm-9">
+        <!--<script id="editor" type="text/plain" name="content" style="width:100%;height:400px;"></script>-->
+      </div>
+    </div>
+    <div class="row cl">
+      <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+        <button  class="btn btn-secondary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存</button>
+        <button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+      </div>
+    </div>
+  </form>
+</article>
+
+<!--header-->
+{include file="public/_footer" /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/hadmin/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="__STATIC__/hadmin/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="__STATIC__/hadmin/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript" src="__STATIC__/hadmin/lib/ueditor/1.4.3/ueditor.config.js"></script>
+<script type="text/javascript" src="__STATIC__/hadmin/lib/ueditor/1.4.3/ueditor.all.min.js"> </script>
+<script type="text/javascript" src="__STATIC__/hadmin/lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
+
+<!--uploadify上传插件-->
+<!--<script type="text/javascript" src="__STATIC__/admin/uploadify/jquery.uploadify.min.js"></script>-->
+<!--<script type="text/javascript" src="__STATIC__/admin/js/image.js"></script>-->
+
+<script type="text/javascript">
+  var // 添加的文件数量
+      fileCount = 0,
+      // 添加的文件总大小
+      fileSize = 0,
+      // 优化retina, 在retina下这个值是2
+      ratio = window.devicePixelRatio || 1,
+      // 缩略图大小
+      thumbnailWidth = 110 * ratio,
+      thumbnailHeight = 110 * ratio,
+      // 所有文件的进度信息，key为file id
+      percentages={},
+      $queue = $("#fileList"),
+      supportTransition = (function(){
+          var s = document.createElement('p').style,
+              r = 'transition' in s ||
+                  'WebkitTransition' in s ||
+                  'MozTransition' in s ||
+                  'msTransition' in s ||
+                  'OTransition' in s;
+          s = null;
+          return r;
+      })();
+    // 初始化Web Uploader
+  var uploader = WebUploader.create({
+      // 选完文件后，是否自动上传。
+      auto: true,
+      // swf文件路径
+      swf: "__STATIC__/admin/webuploader-0.1.5/dist/Uploader.swf",
+      // 文件接收服务端。
+      server: '/admin/image/upload',
+      // 选择文件的按钮。可选。
+      // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+      pick: '#filePicker',
+      dnd: "#uploader",
+      // 只允许选择图片文件。
+      accept: {
+          title: 'Images',
+          extensions: 'gif,jpg,jpeg,bmp,png',
+          mimeTypes: 'image/*'
+      }
+  });
+//  编辑时图片回显
+  var getFileBlob = function (url, cb) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.responseType = "blob";
+      xhr.addEventListener('load', function() {
+          cb(xhr.response);
+      });
+      xhr.send();
+  };
+  var blobToFile = function (blob, name) {
+      blob.lastModifiedDate = new Date();
+      blob.name = name;
+      return blob;
+  };
+  var getFileObject = function(filePathOrUrl, cb) {
+      getFileBlob(filePathOrUrl, function (blob) {
+          cb(blobToFile(blob, 'test.jpg'));
+      });
+  };
+  //需要回显的的图片列表
+  var picList = ['__STATIC__/admin/images/image.png','__STATIC__/admin/images/01.jpg'];
+  $.each(picList, function(index,item){
+      getFileObject(item, function (fileObject) {
+          var wuFile = new WebUploader.Lib.File(WebUploader.guid('rt_'),fileObject);
+          var file = new WebUploader.File(wuFile);
+          //文件状态改为'已上传完成'，避免重复上传
+          file.setStatus('complete');
+          uploader.addFiles(file)
+      })
+  });
+  //上传过程中触发，携带上传进度
+  uploader.onUploadProgress = function( file, percentage ) {
+      var $li = $( '#'+file.id ),
+          $percent = $li.find('.progress span');
+      // 避免重复创建
+      if ( !$percent.length ) {
+          $percent = $('<p class="progress"><span></span></p>')
+              .appendTo( $li )
+              .find('span');
+      }
+      $percent.css( 'width', percentage * 100 + '%' );
+      percentages[ file.id ][ 1 ] = percentage;
+      console.log(1);
+      console.log(percentages)
+  };
+  // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+  uploader.on( 'uploadSuccess', function( file ) {
+      $( '#'+file.id ).addClass('upload-state-done');
+  });
+  // 文件上传失败，显示上传出错。
+  uploader.on( 'uploadError', function( file ) {
+      var $li = $( '#'+file.id ),
+          $error = $li.find('div.error');
+      // 避免重复创建
+      if ( !$error.length ) {
+          $error = $('<div class="error"></div>').appendTo( $li );
+      }
+      $error.text('上传失败');
+  });
+  // 完成上传完了，成功或者失败，先删除进度条。
+  uploader.on( 'uploadComplete', function( file ) {
+      $( '#'+file.id ).find('.progress').remove();
+  });
+
+
+
+  // 当有文件添加进来时执行，负责view的创建
+  function addFile( file ) {
+      var $li = $( '<li id="' + file.id + '">' +
+          '<p class="title">' + file.name + '</p>' +
+          '<p class="imgWrap"></p>'+
+          '<p class="progress"><span></span></p>' +
+          '</li>' ),
+          $btns = $('<div class="file-panel">' +
+              '<span class="cancel">删除</span>' +
+              '<span class="rotateRight">向右旋转</span>' +
+              '<span class="rotateLeft">向左旋转</span></div>').appendTo( $li ),
+          $prgress = $li.find('p.progress span'),
+          $wrap = $li.find( 'p.imgWrap' ),
+          $info = $('<p class="error"></p>'),
+          showError = function( code ) {
+              switch( code ) {
+                  case 'exceed_size':
+                      text = '文件大小超出';
+                      break;
+
+                  case 'interrupt':
+                      text = '上传暂停';
+                      break;
+
+                  default:
+                      text = '上传失败，请重试';
+                      break;
+              }
+              $info.text( text ).appendTo( $li );
+          };
+      if ( file.getStatus() === 'invalid' ) {
+          showError( file.statusText );
+      } else {
+          // @todo lazyload
+          $wrap.text( '预览中' );
+          uploader.makeThumb( file, function( error, src ) {
+              console.log(file);
+              console.log(error);
+              console.log(src);
+              if ( error ) {
+                  $wrap.text( '不能预览' );
+                  return;
+              }
+              var img = $('<img src="'+src+'">');
+              $wrap.empty().append( img );
+          }, thumbnailWidth, thumbnailHeight );
+          percentages[ file.id ] = [ file.size, 0 ];
+          file.rotation = 0;
+          console.log(2);
+          console.log(percentages)
+      }
+      //上传过程中触发，携带上传进度
+      uploader.onUploadProgress = function( file, percentage ) {
+          var $li = $('#'+file.id),
+              $percent = $li.find('.progress span');
+
+          $percent.css( 'width', percentage * 100 + '%' );
+          percentages[ file.id ][ 1 ] = percentage;
+          console.log(7);
+          console.log(percentages)
+      };
+      //文件状态变化
+      file.on('statuschange', function( cur, prev ) {
+          if ( prev === 'progress' ) {
+              $prgress.hide().width(0);
+          } else if ( prev === 'queued' ) {
+              $li.off( 'mouseenter mouseleave' );
+              $btns.remove();
+          }
+          // 成功
+          if ( cur === 'error' || cur === 'invalid' ) {
+              console.log( file.statusText );
+              showError( file.statusText );
+              percentages[ file.id ][ 1 ] = 1;
+              console.log(3);
+              console.log(percentages)
+          } else if ( cur === 'interrupt' ) {
+              showError( 'interrupt' );
+          } else if ( cur === 'queued' ) {
+              percentages[ file.id ][ 1 ] = 0;
+              console.log(4);
+              console.log(percentages)
+          } else if ( cur === 'progress' ) {
+              $info.remove();
+              $prgress.css('display', 'block');
+          } else if ( cur === 'complete' ) {
+              $li.append( '<span class="success"></span>' );
+          }
+
+          $li.removeClass( 'state-' + prev ).addClass( 'state-' + cur );
+      });
+
+      $li.on( 'mouseenter', function() {
+          $btns.stop().animate({height: 30});
+      });
+
+      $li.on( 'mouseleave', function() {
+          $btns.stop().animate({height: 0});
+      });
+
+      //翻转和删除
+      $btns.on( 'click', 'span', function() {
+          var index = $(this).index(),
+              deg;
+          switch ( index ) {
+              case 0:
+                  uploader.removeFile( file );
+                  return;
+              case 1:
+                  file.rotation += 90;
+                  break;
+              case 2:
+                  file.rotation -= 90;
+                  break;
+          }
+
+          if ( supportTransition ) {
+              deg = 'rotate(' + file.rotation + 'deg)';
+              $wrap.css({
+                  '-webkit-transform': deg,
+                  '-mos-transform': deg,
+                  '-o-transform': deg,
+                  'transform': deg
+              });
+          } else {
+              $wrap.css( 'filter', 'progid:DXImageTransform.Microsoft.BasicImage(rotation='+ (~~((file.rotation/90)%4 + 4)%4) +')');
+              // use jquery animate to rotation
+              // $({
+              //     rotation: rotation
+              // }).animate({
+              //     rotation: file.rotation
+              // }, {
+              //     easing: 'linear',
+              //     step: function( now ) {
+              //         now = now * Math.PI / 180;
+
+              //         var cos = Math.cos( now ),
+              //             sin = Math.sin( now );
+
+              //         $wrap.css( 'filter', "progid:DXImageTransform.Microsoft.Matrix(M11=" + cos + ",M12=" + (-sin) + ",M21=" + sin + ",M22=" + cos + ",SizingMethod='auto expand')");
+              //     }
+              // });
+          }
+      });
+      $li.appendTo( $queue );
+  }
+  // 负责view的销毁
+  function removeFile( file ) {
+      var $li = $('#'+file.id);
+      console.log(5);
+      console.log(percentages);
+      delete percentages[ file.id ];
+      console.log(6);
+      console.log(percentages)
+      $li.off().find('.file-panel').off().end().remove();
+  }
+
+  // 当有文件添加进来的时候触发
+  uploader.onFileQueued = function( file ) {
+      fileCount++;
+      fileSize += file.size;
+      addFile( file );
+  };
+  //当文件被移除队列后触发。
+  uploader.onFileDequeued = function( file ) {
+      removeFile( file );
+  };
+
+
+
+  $(function(){
+    $('.skin-minimal input').iCheck({
+      checkboxClass: 'icheckbox-blue',
+      radioClass: 'iradio-blue',
+      increaseArea: '20%'
+    });
+
+
+    //表单验证
+    $("#form-singwaapp").validate({
+      rules:{
+        title:{
+          required:true,
+        },
+        small_title:{
+          required:true,
+        },
+        catid:{
+          required:true,
+        },
+        sources_type:{
+          required:true,
+        },
+        is_allowcomments:{
+          required:true,
+        },
+
+      },
+      onkeyup:false,
+      focusCleanup:true,
+      success:"valid",
+      submitHandler:function(form){
+        singwaapp_save(form);// 需要小伙伴自定义一个singwaapp_save方法 用来处理抛送请求的哦
+      }
+    });
+
+  //    var ue = UE.getEditor('editor');
+
+  });
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+
+</body>
+</html>
